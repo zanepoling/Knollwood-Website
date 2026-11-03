@@ -398,6 +398,7 @@
     function close(){ cal.classList.remove("open"); }
     disp.addEventListener("click",function(){ cal.classList.contains("open")?close():open(); });
     cal.addEventListener("click",function(e){
+      e.stopPropagation();
       var nav=e.target.closest&&e.target.closest(".dp-nav");
       if(nav){ view.setMonth(view.getMonth()+Number(nav.getAttribute("data-d"))); render(); return; }
       var cell=e.target.closest&&e.target.closest(".dp-cell[data-day]");
