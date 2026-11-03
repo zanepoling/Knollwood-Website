@@ -47,6 +47,10 @@
   label.fl{display:block;font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:var(--brass);margin-bottom:.45rem;}
   input,select,textarea{width:100%;background:var(--ink);border:1px solid var(--line);color:var(--ivory);
     font-family:var(--serif);font-size:1rem;padding:.72rem .8rem;}
+  /* dark-themed native date/time pickers (matching calendar + visible icons) */
+  input[type="date"],input[type="time"]{color-scheme:dark;cursor:pointer;}
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator{filter:invert(78%) sepia(28%) saturate(560%) hue-rotate(354deg) brightness(92%);cursor:pointer;}
   input:focus,select:focus,textarea:focus{border-color:var(--brass);outline:none;}
   textarea{min-height:90px;resize:vertical;}
   .two{display:grid;grid-template-columns:1fr 1fr;gap:1rem;} @media(max-width:560px){.two{grid-template-columns:1fr;}}
@@ -341,6 +345,15 @@
   /* ---- "use a different code" resets the saved code ---- */
   var _diff=$("#diffCode");
   if(_diff){_diff.addEventListener("click",function(e){e.preventDefault();clearCode();activeCode="";$("#code").value="";show("#step-code");});}
+
+  /* ---- date field: open the calendar on click/focus, typing still works ---- */
+  (function(){
+    var d=$("#date"); if(!d) return;
+    try{ d.min=new Date().toISOString().slice(0,10); }catch(e){}
+    function openPicker(){ if(d.showPicker){ try{ d.showPicker(); }catch(e){} } }
+    d.addEventListener("click",openPicker);
+    d.addEventListener("focus",openPicker);
+  })();
 
   /* ---- stay logged in: if a recent valid code is remembered, skip the code step ---- */
   (function restore(){ var c=loadCode(); if(c){ activeCode=c; show("#step-terms"); } })();
