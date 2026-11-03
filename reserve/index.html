@@ -48,9 +48,24 @@
   input,select,textarea{width:100%;background:var(--ink);border:1px solid var(--line);color:var(--ivory);
     font-family:var(--serif);font-size:1rem;padding:.72rem .8rem;}
   /* dark-themed native date/time pickers (matching calendar + visible icons) */
-  input[type="date"],input[type="time"]{color-scheme:dark;cursor:pointer;}
-  input[type="date"]::-webkit-calendar-picker-indicator,
-  input[type="time"]::-webkit-calendar-picker-indicator{filter:invert(78%) sepia(28%) saturate(560%) hue-rotate(354deg) brightness(92%);cursor:pointer;}
+  select{color-scheme:dark;cursor:pointer;}
+  /* custom date picker */
+  .dp{position:relative;}
+  .dp-input{cursor:pointer;}
+  .dp-cal{position:absolute;z-index:30;left:0;top:calc(100% + 6px);width:286px;max-width:88vw;
+    background:var(--ink-2);border:1px solid var(--brass);padding:.7rem .75rem .85rem;display:none;box-shadow:0 12px 32px rgba(0,0,0,.55);}
+  .dp-cal.open{display:block;}
+  .dp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;}
+  .dp-title{font-size:.95rem;color:var(--ivory);}
+  .dp-nav{background:none;border:1px solid var(--line);color:var(--ivory);width:28px;height:28px;flex:none;cursor:pointer;font-size:1rem;line-height:1;}
+  .dp-nav:hover{border-color:var(--brass);color:var(--brass-hi);}
+  .dp-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;}
+  .dp-dow{text-align:center;font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:var(--brass);padding:.25rem 0;}
+  .dp-cell{background:none;border:0;color:var(--ivory);padding:.42rem 0;font-family:var(--serif);font-size:.9rem;cursor:pointer;}
+  .dp-cell:hover:not(.dp-dis):not(.dp-empty){background:var(--brass);color:var(--ink);}
+  .dp-empty{visibility:hidden;cursor:default;}
+  .dp-dis{color:#5a5347;cursor:not-allowed;}
+  .dp-sel{background:var(--brass);color:var(--ink);}
   input:focus,select:focus,textarea:focus{border-color:var(--brass);outline:none;}
   textarea{min-height:90px;resize:vertical;}
   .two{display:grid;grid-template-columns:1fr 1fr;gap:1rem;} @media(max-width:560px){.two{grid-template-columns:1fr;}}
@@ -165,12 +180,19 @@
       </div>
 
       <div class="two">
-        <div class="field"><label class="fl" for="date">Preferred Date</label><input id="date" type="date" required /></div>
+        <div class="field"><label class="fl" for="dateDisplay">Preferred Date</label>
+          <div class="dp" id="dp">
+            <input id="dateDisplay" class="dp-input" type="text" readonly placeholder="Select a date" />
+            <input id="date" type="hidden" />
+            <div class="dp-cal" id="dpCal"></div>
+          </div>
+          <div class="err" id="dateErr"></div>
+        </div>
         <div class="field"><label class="fl" for="guests">Estimated # of Guests</label><input id="guests" type="number" min="1" /></div>
       </div>
       <div class="two">
-        <div class="field"><label class="fl" for="start">Start Time</label><input id="start" type="time" min="06:00" max="22:00" /></div>
-        <div class="field"><label class="fl" for="end">End Time</label><input id="end" type="time" min="06:00" max="22:00" /></div>
+        <div class="field"><label class="fl" for="start">Start Time</label><select id="start"></select></div>
+        <div class="field"><label class="fl" for="end">End Time</label><select id="end"></select></div>
       </div>
       <p class="hint" style="margin:-.2rem 0 1.1rem;">Knollwood is available for events from 6:00&nbsp;a.m. to 10:00&nbsp;p.m.</p>
       <div class="field"><label class="fl" for="notes">Anything else we should know?</label><textarea id="notes" maxlength="1200" placeholder="Nature of the event, vendors, setup needs, etc."></textarea></div>
@@ -283,7 +305,7 @@
   function post(data){
     return new Promise(function(resolve,reject){
       var cb="kwcb"+(++_n), s=document.createElement("script");
-      var t=setTimeout(function(){cleanup();reject(new Error("timeout"));},15000);
+      var t=setTimeout(function(){cleanup();reject(new Error("timeout"));},25000);
       function cleanup(){try{delete window[cb];}catch(e){window[cb]=undefined;} if(s.parentNode)s.parentNode.removeChild(s); clearTimeout(t);}
       window[cb]=function(d){cleanup();resolve(d);};
       data.callback=cb;
@@ -323,6 +345,8 @@
     var area=(document.querySelector('input[name="area"]:checked')||{}).value||"";
     $("#areaErr").textContent="";
     if(!area){$("#areaErr").textContent="Please choose an area of the house.";return;}
+    $("#dateErr").textContent="";
+    if(!$("#date").value){$("#dateErr").textContent="Please choose a date.";return;}
     var sbtn=this.querySelector('button[type=submit]');
     var data={
       action:"booking", code:activeCode,
@@ -346,13 +370,58 @@
   var _diff=$("#diffCode");
   if(_diff){_diff.addEventListener("click",function(e){e.preventDefault();clearCode();activeCode="";$("#code").value="";show("#step-code");});}
 
-  /* ---- date field: open the calendar on click/focus, typing still works ---- */
-  (function(){
-    var d=$("#date"); if(!d) return;
-    try{ d.min=new Date().toISOString().slice(0,10); }catch(e){}
-    function openPicker(){ if(d.showPicker){ try{ d.showPicker(); }catch(e){} } }
-    d.addEventListener("click",openPicker);
-    d.addEventListener("focus",openPicker);
+  /* ---- custom date picker (branded calendar popup) ---- */
+  (function datePicker(){
+    var disp=$("#dateDisplay"), hid=$("#date"), cal=$("#dpCal");
+    if(!disp||!hid||!cal) return;
+    var today=new Date(); today.setHours(0,0,0,0);
+    var view=new Date(today.getFullYear(), today.getMonth(), 1);
+    var sel=null;
+    var MON=["January","February","March","April","May","June","July","August","September","October","November","December"];
+    var DOW=["Su","Mo","Tu","We","Th","Fr","Sa"];
+    function pad(n){return (n<10?"0":"")+n;}
+    function iso(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());}
+    function pretty(d){return MON[d.getMonth()]+" "+d.getDate()+", "+d.getFullYear();}
+    function render(){
+      var y=view.getFullYear(), m=view.getMonth();
+      var startDow=new Date(y,m,1).getDay(), days=new Date(y,m+1,0).getDate();
+      var h='<div class="dp-head"><button type="button" class="dp-nav" data-d="-1">&#8249;</button><span class="dp-title">'+MON[m]+" "+y+'</span><button type="button" class="dp-nav" data-d="1">&#8250;</button></div><div class="dp-grid">';
+      DOW.forEach(function(d){h+='<span class="dp-dow">'+d+'</span>';});
+      for(var i=0;i<startDow;i++) h+='<span class="dp-cell dp-empty"></span>';
+      for(var day=1;day<=days;day++){
+        var cur=new Date(y,m,day), dis=cur<today, isSel=sel&&iso(cur)===iso(sel);
+        h+='<button type="button" class="dp-cell'+(dis?' dp-dis':'')+(isSel?' dp-sel':'')+'"'+(dis?' disabled':'')+' data-day="'+day+'">'+day+'</button>';
+      }
+      cal.innerHTML=h+'</div>';
+    }
+    function open(){ render(); cal.classList.add("open"); }
+    function close(){ cal.classList.remove("open"); }
+    disp.addEventListener("click",function(){ cal.classList.contains("open")?close():open(); });
+    cal.addEventListener("click",function(e){
+      var nav=e.target.closest&&e.target.closest(".dp-nav");
+      if(nav){ view.setMonth(view.getMonth()+Number(nav.getAttribute("data-d"))); render(); return; }
+      var cell=e.target.closest&&e.target.closest(".dp-cell[data-day]");
+      if(cell&&!cell.disabled){
+        sel=new Date(view.getFullYear(),view.getMonth(),Number(cell.getAttribute("data-day")));
+        hid.value=iso(sel); disp.value=pretty(sel); $("#dateErr").textContent=""; close();
+      }
+    });
+    document.addEventListener("click",function(e){ if(!(e.target.closest&&e.target.closest("#dp"))) close(); });
+  })();
+
+  /* ---- time dropdowns (6:00 a.m. – 10:00 p.m., 30-minute steps) ---- */
+  (function timeOptions(){
+    function fill(s){
+      if(!s) return;
+      var html='<option value="">Select a time…</option>';
+      for(var mins=6*60; mins<=22*60; mins+=30){
+        var h=Math.floor(mins/60), mm=mins%60, hh=(h<10?"0":"")+h+":"+(mm<10?"0":"")+mm;
+        var ap=h<12?"AM":"PM", h12=h%12; if(h12===0)h12=12;
+        html+='<option value="'+hh+'">'+h12+":"+(mm<10?"0":"")+mm+" "+ap+'</option>';
+      }
+      s.innerHTML=html;
+    }
+    fill($("#start")); fill($("#end"));
   })();
 
   /* ---- stay logged in: if a recent valid code is remembered, skip the code step ---- */
