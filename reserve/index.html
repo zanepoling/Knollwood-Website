@@ -194,6 +194,7 @@
         <div class="field"><label class="fl" for="start">Start Time</label><select id="start"></select></div>
         <div class="field"><label class="fl" for="end">End Time</label><select id="end"></select></div>
       </div>
+      <div class="err" id="timeErr" style="margin-top:-.3rem;"></div>
       <p class="hint" style="margin:-.2rem 0 1.1rem;">Knollwood is available for events from 6:00&nbsp;a.m. to 10:00&nbsp;p.m.</p>
       <div class="field"><label class="fl" for="notes">Anything else we should know?</label><textarea id="notes" maxlength="1200" placeholder="Nature of the event, vendors, setup needs, etc."></textarea></div>
 
@@ -347,6 +348,9 @@
     if(!area){$("#areaErr").textContent="Please choose an area of the house.";return;}
     $("#dateErr").textContent="";
     if(!$("#date").value){$("#dateErr").textContent="Please choose a date.";return;}
+    $("#timeErr").textContent="";
+    var _st=$("#start").value, _en=$("#end").value;
+    if(_st&&_en&&_en<=_st){$("#timeErr").textContent="The end time must be after the start time.";return;}
     var sbtn=this.querySelector('button[type=submit]');
     var data={
       action:"booking", code:activeCode,
