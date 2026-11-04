@@ -185,9 +185,9 @@
   <div class="scene-bg" data-scene="gardens"><div class="frame" data-img="images/main/gardens.jpg"></div></div>
   <div class="scene-bg" data-scene="features"><div class="frame" data-img="images/main/features.jpg"></div></div>
   <div class="scene-bg" data-scene="visit"><div class="frame" data-img="BG_RESERVE"></div></div>
-  <div class="scene-bg" data-scene="location"><div class="frame" data-img="images/main/aerial.jpg"></div></div>
+  <div class="scene-bg" data-scene="location"><div class="frame" data-img="images/main/location.jpg"></div></div>
   <div class="scene-bg" data-scene="media"><div class="frame" data-img="images/main/media.jpg"></div></div>
-  <div class="scene-bg" data-scene="about"><div class="frame" data-img="images/main/about.jpg"></div></div>
+  <div class="scene-bg" data-scene="about"><div class="frame" data-img="images/main/about-plaque.jpg"></div></div>
 </div>
 
 <!-- ===== top bar ===== -->
@@ -309,7 +309,8 @@
     <div class="copy reveal">
       <p class="eyebrow">Media Resources</p>
       <p>High-resolution images, our story in brief, and materials for planners, publications, and partners will live here.</p>
-      <p class="draft">[ Media resources &mdash; to be built. ]</p>
+      <div class="cta-row"><a class="btn" href="Knollwood-Historic-Timeline.pdf" target="_blank" rel="noopener">Printable Timeline and History</a></div>
+      <p class="draft">[ More media resources &mdash; to be built. ]</p>
     </div>
   </section>
 
@@ -424,6 +425,7 @@
     {slug:"board-room",name:"The Board Room",sub:"Walnut-paneled gathering room",img:"images/rooms/board-room.jpg",body:"A walnut-paneled room at the heart of the house, set for meetings and seated gatherings."},
     {slug:"blue-parlor",name:"The Blue Parlor",sub:"Portrait parlor off the hall",img:"images/rooms/blue-parlor.jpg",body:"A richly colored parlor with a fireplace and wing chairs, opening through an arch to the rooms beyond."},
     {slug:"reynolds-parlor",name:"The Reynolds Parlor",sub:"A light-filled sitting room",img:"images/rooms/reynolds-parlor.jpg",body:"A bright parlor with tall windows and a portrait above the mantel."},
+    {slug:"major-reynolds-room",name:"The Major Reynolds Room",sub:"The Major&rsquo;s portrait",img:"images/rooms/major-reynolds-room.jpg",body:"The Major Reynolds Room, hung with his portrait, opening to the Mary Alice Kennedy Room beyond."},
     {slug:"dining-room",name:"The Dining Room",sub:"Beneath the bay windows",img:"images/rooms/dining-room.jpg",body:"A gracious dining room ringed by windows, seating guests around a central table."},
     {slug:"sunroom",name:"The Sunroom",sub:"Glass doors to the grounds",img:"images/rooms/sunroom.jpg",body:"A sun-filled room lined with glass doors that open toward the porch and grounds."},
     {slug:"kitchen",name:"The Kitchen",sub:"Marble & checkerboard stone",img:"images/rooms/kitchenette.jpg",body:"A fully appointed kitchen with marble counters and a classic checkerboard floor, open to every guest."},
@@ -434,6 +436,7 @@
 
   /* ---------- routed pages ---------- */
   var GARDENS=[
+    {name:"The Garden Walk",sub:"",img:"images/gardens/garden-walk.jpg"},
     {name:"The Boxwood Garden",sub:"",img:"images/main/gardens.jpg"},
     {name:"The Garden Terrace",sub:"",img:"images/main/history.jpg"},
     {name:"Under the Magnolias",sub:"",img:"images/views/exterior-rear.jpg"},
@@ -450,11 +453,17 @@
     {name:"The Millwork",sub:"Hand-finished paneling",img:"images/features/millwork.jpg"},
     {name:"Pocket Doors",sub:"Oak & brass flush pulls",img:"images/features/pocket-doors.jpg"},
     {name:"The Arched Door",sub:"Reeded casing & panel work",img:"images/features/arched-door.jpg"},
-    {name:"A Sense of Place",sub:"An antique map of Tennessee",img:"images/features/door-and-map.jpg"}
+    {name:"A Sense of Place",sub:"An antique map of Tennessee",img:"images/features/door-and-map.jpg"},
+    {name:"The Butler's Pantry",sub:"",img:"images/features/pantry-doorway.jpg"},
+    {name:"The Working Pantry",sub:"",img:"images/features/pantry-galley.jpg"},
+    {name:"Checkerboard Marble",sub:"",img:"images/features/checkerboard-hall.jpg"},
+    {name:"Embossed Leather",sub:"",img:"images/features/leather-emboss.jpg"}
   ];
   var GVIEWS=[
-    {name:"The Front Elevation",sub:"Columns & brick",img:"images/views/exterior-front.jpg"},
     {name:"The Veranda at Dusk",sub:"Looking to the Smokies",img:"images/views/veranda.jpg"},
+    {name:"The Veranda",sub:"",img:"images/views/veranda-day.jpg"},
+    {name:"The Smoky Mountains",sub:"",img:"images/views/smokies-columns.jpg"},
+    {name:"Through the Window",sub:"",img:"images/views/window-view.jpg"},
     {name:"Golden Hour",sub:"The portico at sunset",img:"images/views/exterior-sunset.jpg"},
     {name:"The Garden Front",sub:"Magnolias & the rear veranda",img:"images/views/exterior-rear.jpg"},
     {name:"The Approach",sub:"From above",img:"images/views/aerial-approach.jpg"},
