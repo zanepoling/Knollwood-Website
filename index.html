@@ -51,14 +51,14 @@
   .scene-bg{position:absolute;inset:0;opacity:0;transition:opacity 1.1s ease;}
   .scene-bg.active{opacity:1;}
   .scene-bg .frame{position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);width:var(--band);background-size:contain;background-repeat:no-repeat;background-position:center;}
-  .scene-bg .frame::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,5,4,.34),rgba(6,5,4,.12) 40%,rgba(6,5,4,.55));}
+  .scene-bg .frame::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,5,4,.62) 0%,rgba(6,5,4,.1) 50%,rgba(6,5,4,.62) 100%);}
   .scene-bg .plate{position:absolute;left:50%;transform:translateX(-50%);bottom:1.1rem;z-index:3;font-family:var(--sans);font-size:.58rem;letter-spacing:.26em;text-transform:uppercase;color:rgba(242,236,224,.5);white-space:nowrap;padding:0 1rem;text-align:center;}
   @media (max-width:860px){.scene-bg .frame{width:100%;}}
   .ph-door{background-image:radial-gradient(120% 90% at 50% 30%,rgba(200,163,102,.14),transparent 55%),linear-gradient(180deg,#241d13,#12100a 55%,#080604);}
 
   /* ===== top bar ===== */
   header.bar{position:fixed;inset:0 0 auto 0;z-index:60;height:var(--bar-h);display:flex;align-items:center;justify-content:space-between;padding:0 var(--pad);
-    background:rgba(8,7,6,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+    background:linear-gradient(180deg,rgba(8,7,6,.82),rgba(8,7,6,0));backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:none;}
   .bar .menubtn{background:none;border:1px solid rgba(200,163,102,.35);color:var(--ivory);padding:.7rem .8rem;cursor:pointer;display:inline-flex;align-items:center;transition:border-color .3s,color .3s;}
   .bar .menubtn:hover{border-color:var(--brass);color:var(--brass-hi);}
   .bar .menubtn .bars{display:inline-flex;flex-direction:column;gap:3px;}
@@ -426,12 +426,10 @@
     {slug:"blue-parlor",name:"The Blue Parlor",sub:"Portrait parlor off the hall",img:"images/rooms/blue-parlor.jpg",body:"A richly colored parlor with a fireplace and wing chairs, opening through an arch to the rooms beyond."},
     {slug:"reynolds-parlor",name:"The Reynolds Parlor",sub:"A light-filled sitting room",img:"images/rooms/reynolds-parlor.jpg",body:"A bright parlor with tall windows and a portrait above the mantel."},
     {slug:"major-reynolds-room",name:"The Major Reynolds Room",sub:"The Major&rsquo;s portrait",img:"images/rooms/major-reynolds-room.jpg",body:"The Major Reynolds Room, hung with his portrait, opening to the Mary Alice Kennedy Room beyond."},
-    {slug:"dining-room",name:"The Dining Room",sub:"Beneath the bay windows",img:"images/rooms/dining-room.jpg",body:"A gracious dining room ringed by windows, seating guests around a central table."},
     {slug:"sunroom",name:"The Sunroom",sub:"Glass doors to the grounds",img:"images/rooms/sunroom.jpg",body:"A sun-filled room lined with glass doors that open toward the porch and grounds."},
     {slug:"kitchen",name:"The Kitchen",sub:"Marble & checkerboard stone",img:"images/rooms/kitchenette.jpg",body:"A fully appointed kitchen with marble counters and a classic checkerboard floor, open to every guest."},
     {slug:"butlers-pantry",name:"The Butler&rsquo;s Pantry",sub:"Dark oak, brass, and marble",img:"images/rooms/butlers-pantry.jpg",body:"A richly finished working pantry in dark oak, with marble counters, brass fittings, and the checkerboard floor."},
-    {slug:"entry-hall",name:"The Entry Hall",sub:"Checkerboard marble & the long view",img:"images/rooms/entry-hall.jpg",body:"The central hall, paved in checkerboard marble, running the depth of the house."},
-    {slug:"sitting-room",name:"The Sitting Room",sub:"A quiet corner by the window",img:"images/rooms/sitting-room.jpg",body:"A quiet room with soft light and a pair of chairs by the window."}
+    {slug:"entry-hall",name:"The Entry Hall",sub:"Checkerboard marble & the long view",img:"images/rooms/entry-hall.jpg",body:"The central hall, paved in checkerboard marble, running the depth of the house."}
   ];
 
   /* ---------- routed pages ---------- */
