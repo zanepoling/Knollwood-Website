@@ -436,20 +436,20 @@
     {name:"The Garden Walk",sub:"The approach to the house",img:"images/gardens/garden-walk.jpg"},
     {name:"The Veranda Gardens",sub:"Boxwoods along the rear portico",img:"images/main/gardens.jpg"},
     {name:"The Garden Terrace",sub:"Brick terrace & seating",img:"images/main/history.jpg"},
-    {name:"Under the Magnolias",sub:"The rear terrace in magnolia shade",img:"images/views/exterior-rear.jpg"},
+    {name:"The Magnolia Terrace",sub:"The rear terrace in magnolia shade",img:"images/views/exterior-rear.jpg"},
     {name:"The Grounds from Above",sub:"The estate & its gardens",img:"images/main/about.jpg"}
   ];
   var GFEATURES=[
-    {name:"The Hands That Made History",sub:"The restoration monument",img:"images/features/monument.jpg"},
+    {name:"The Restoration Monument",sub:"The restoration monument",img:"images/features/monument.jpg"},
     {name:"The Carved Crest",sub:"Knollwood, Est. 1851",img:"images/features/carved-sign.jpg"},
     {name:"Reclaimed Wood",sub:"Handcrafted from the original house",img:"images/features/reclaimed-table.jpg"},
     {name:"Embossed Leather",sub:"The Knollwood mark",img:"images/features/leather-folder.jpg"},
-    {name:"The Details",sub:"Coasters in Knollwood leather",img:"images/features/coasters.jpg"},
+    {name:"Leather Coasters",sub:"Coasters in Knollwood leather",img:"images/features/coasters.jpg"},
     {name:"Original Hardware",sub:"Restored brass",img:"images/features/door-hardware.jpg"},
     {name:"The Millwork",sub:"Hand-finished paneling",img:"images/features/millwork.jpg"},
     {name:"Pocket Doors",sub:"Oak & brass flush pulls",img:"images/features/pocket-doors.jpg"},
     {name:"The Arched Door",sub:"Reeded casing & panel work",img:"images/features/arched-door.jpg"},
-    {name:"A Sense of Place",sub:"An antique map of Tennessee",img:"images/features/door-and-map.jpg"},
+    {name:"Antique Map of Tennessee",sub:"An antique map of Tennessee",img:"images/features/door-and-map.jpg"},
     {name:"The Butler's Pantry",sub:"Through the oak doorway",img:"images/features/pantry-doorway.jpg"},
     {name:"The Working Pantry",sub:"Marble counters & checkerboard floor",img:"images/features/pantry-galley.jpg"},
     {name:"Checkerboard Marble",sub:"The gallery hall",img:"images/features/checkerboard-hall.jpg"},
@@ -459,9 +459,9 @@
     {name:"The Veranda at Dusk",sub:"Looking to the Smokies",img:"images/views/veranda.jpg"},
     {name:"The Veranda",sub:"Dining with a mountain view",img:"images/views/veranda-day.jpg"},
     {name:"The Smoky Mountains",sub:"Framed by the veranda columns",img:"images/views/smokies-columns.jpg"},
-    {name:"Golden Hour",sub:"The portico at sunset",img:"images/views/exterior-sunset.jpg"},
+    {name:"The Portico at Sunset",sub:"The portico at sunset",img:"images/views/exterior-sunset.jpg"},
     {name:"The Approach",sub:"From above",img:"images/views/aerial-approach.jpg"},
-    {name:"From Above",sub:"Golden hour from the air",img:"images/views/aerial-golden.jpg"},
+    {name:"The House at Golden Hour",sub:"Golden hour from the air",img:"images/views/aerial-golden.jpg"},
     {name:"The Grounds",sub:"House & gardens from the air",img:"images/views/aerial-grounds.jpg"},
     {name:"Toward Knoxville",sub:"The long view west",img:"images/views/aerial-valley.jpg"},
     {name:"The Estate",sub:"Knollwood & its setting",img:"images/views/aerial-estate.jpg"}
@@ -498,12 +498,12 @@
     var html='<div class="tile-grid">';
     cfg.items.forEach(function(f,i){
       var bg=f.img?("background-image:url('"+f.img+"')"):"background-image:linear-gradient(150deg,#2a2115,#0a0705)";
-      var cap=(f.name||f.sub)?('<div class="grad"></div><div class="cap"><h3>'+(f.name||'')+'</h3>'+(f.sub?'<span class="tp">'+f.sub+'</span>':'')+'</div>'):'';
+      var cap=f.name?('<div class="grad"></div><div class="cap"><h3>'+f.name+'</h3></div>'):'';
       html+='<button class="tile" data-idx="'+i+'"><div class="img" style="'+bg+'"></div>'+cap+'</button>';
     });
     html+='</div>';
     $("#pvBody").innerHTML=html;
-    var lbItems=cfg.items.map(function(f){ return {img:f.img,name:f.name,sub:f.sub}; });
+    var lbItems=cfg.items.map(function(f){ return {img:f.img,name:f.name}; });
     $("#pvBody").querySelectorAll(".tile[data-idx]").forEach(function(b){ b.addEventListener("click",function(){ openLB(lbItems, parseInt(b.getAttribute("data-idx"),10)); }); });
   }
   function roomPage(f){
