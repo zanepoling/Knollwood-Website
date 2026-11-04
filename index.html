@@ -437,7 +437,7 @@
     {name:"The Veranda Gardens",sub:"Boxwoods along the rear portico",img:"images/main/gardens.jpg"},
     {name:"The Garden Terrace",sub:"Brick terrace & seating",img:"images/main/history.jpg"},
     {name:"Under the Magnolias",sub:"The rear terrace in magnolia shade",img:"images/views/exterior-rear.jpg"},
-    {name:"The Formal Gardens",sub:"",img:"images/main/about.jpg"}
+    {name:"The Grounds from Above",sub:"The estate & its gardens",img:"images/main/about.jpg"}
   ];
   var GFEATURES=[
     {name:"The Hands That Made History",sub:"The restoration monument",img:"images/features/monument.jpg"},
@@ -459,7 +459,6 @@
     {name:"The Veranda at Dusk",sub:"Looking to the Smokies",img:"images/views/veranda.jpg"},
     {name:"The Veranda",sub:"Dining with a mountain view",img:"images/views/veranda-day.jpg"},
     {name:"The Smoky Mountains",sub:"Framed by the veranda columns",img:"images/views/smokies-columns.jpg"},
-    {name:"Through the Window",sub:"A sitting nook with a view",img:"images/views/window-view.jpg"},
     {name:"Golden Hour",sub:"The portico at sunset",img:"images/views/exterior-sunset.jpg"},
     {name:"The Approach",sub:"From above",img:"images/views/aerial-approach.jpg"},
     {name:"From Above",sub:"Golden hour from the air",img:"images/views/aerial-golden.jpg"},
@@ -499,7 +498,8 @@
     var html='<div class="tile-grid">';
     cfg.items.forEach(function(f,i){
       var bg=f.img?("background-image:url('"+f.img+"')"):"background-image:linear-gradient(150deg,#2a2115,#0a0705)";
-      html+='<button class="tile" data-idx="'+i+'"><div class="img" style="'+bg+'"></div></button>';
+      var cap=(f.name||f.sub)?('<div class="grad"></div><div class="cap"><h3>'+(f.name||'')+'</h3>'+(f.sub?'<span class="tp">'+f.sub+'</span>':'')+'</div>'):'';
+      html+='<button class="tile" data-idx="'+i+'"><div class="img" style="'+bg+'"></div>'+cap+'</button>';
     });
     html+='</div>';
     $("#pvBody").innerHTML=html;
