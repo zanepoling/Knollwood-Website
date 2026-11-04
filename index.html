@@ -59,6 +59,9 @@
   /* ===== top bar ===== */
   header.bar{position:fixed;inset:0 0 auto 0;z-index:60;height:var(--bar-h);display:flex;align-items:center;justify-content:space-between;padding:0 var(--pad);
     background:linear-gradient(180deg,rgba(8,7,6,.92) 0%,rgba(8,7,6,.55) 45%,rgba(8,7,6,0) 100%);border-bottom:none;}
+  header.bar::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ink);opacity:0;transition:opacity .35s ease;}
+  header.bar.solid::before{opacity:1;}
+  header.bar.solid{border-bottom:1px solid var(--line);}
   .bar .menubtn{background:none;border:1px solid rgba(200,163,102,.35);color:var(--ivory);padding:.7rem .8rem;cursor:pointer;display:inline-flex;align-items:center;transition:border-color .3s,color .3s;}
   .bar .menubtn:hover{border-color:var(--brass);color:var(--brass-hi);}
   .bar .menubtn .bars{display:inline-flex;flex-direction:column;gap:3px;}
@@ -635,6 +638,9 @@
   var secs=[].slice.call(document.querySelectorAll("#guest,#reserve,#history,#restoration,#views,#rooms,#gardens,#features,#location,#media,#about"));
   var bgObs=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ setScene(map[e.target.id]); } }); },{threshold:0.5});
   secs.forEach(function(s){ bgObs.observe(s); });
+  var topBar=document.querySelector("header.bar");
+  function onScrollBar(){ if(topBar) topBar.classList.toggle("solid", window.scrollY > window.innerHeight*0.4); }
+  window.addEventListener("scroll", onScrollBar, {passive:true}); onScrollBar();
 
   /* ---------- menu ---------- */
   var overlay=$("#overlay"), menuBtn=$("#menuBtn");
