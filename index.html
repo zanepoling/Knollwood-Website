@@ -58,10 +58,7 @@
 
   /* ===== top bar ===== */
   header.bar{position:fixed;inset:0 0 auto 0;z-index:60;height:var(--bar-h);display:flex;align-items:center;justify-content:space-between;padding:0 var(--pad);
-    background:linear-gradient(180deg,rgba(8,7,6,.92) 0%,rgba(8,7,6,.55) 45%,rgba(8,7,6,0) 100%);border-bottom:none;}
-  header.bar::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ink);opacity:0;transition:opacity .35s ease;}
-  header.bar.solid::before{opacity:1;}
-  header.bar.solid{border-bottom:1px solid var(--line);}
+    background:var(--ink);border-bottom:1px solid var(--line);}
   .bar .menubtn{background:none;border:1px solid rgba(200,163,102,.35);color:var(--ivory);padding:.7rem .8rem;cursor:pointer;display:inline-flex;align-items:center;transition:border-color .3s,color .3s;}
   .bar .menubtn:hover{border-color:var(--brass);color:var(--brass-hi);}
   .bar .menubtn .bars{display:inline-flex;flex-direction:column;gap:3px;}
