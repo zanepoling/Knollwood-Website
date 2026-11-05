@@ -421,13 +421,12 @@
   /* ---------- rooms data (gallery + detail) ---------- */
   var ROOMS=[
     {slug:"grand-hall",name:"The Grand Hall",sub:"Arched entry & the rising stair",img:"images/rooms/grand-hall.jpg",body:"The central hall, with its arched openings, portraits, and the stair rising to the upper floors."},
-    {slug:"board-room",name:"The Board Room",sub:"Walnut-paneled gathering room",img:"images/rooms/board-room.jpg",body:"A walnut-paneled room at the heart of the house, set for meetings and seated gatherings."},
-    {slug:"blue-parlor",name:"The Blue Parlor",sub:"Portrait parlor off the hall",img:"images/rooms/blue-parlor.jpg",body:"A richly colored parlor with a fireplace and wing chairs, opening through an arch to the rooms beyond."},
-    {slug:"reynolds-parlor",name:"The Reynolds Parlor",sub:"A light-filled sitting room",img:"images/rooms/reynolds-parlor.jpg",body:"A bright parlor with tall windows and a portrait above the mantel."},
-    {slug:"major-reynolds-room",name:"The Major Reynolds Room",sub:"The Major&rsquo;s portrait",img:"images/rooms/major-reynolds-room.jpg",body:"The Major Reynolds Room, hung with his portrait, opening to the Mary Alice Kennedy Room beyond."},
+    {slug:"board-room",name:"The George Washington Board Room",sub:"Appointed for business, up to 10",img:"images/rooms/board-room.jpg",body:"Named for George Washington, commander of the Continental Army, this walnut-appointed room seats up to ten - well suited to board meetings, strategy sessions, and working lunches, with high-speed internet, video conferencing, and a TV for presentations."},
+    {slug:"blue-parlor",name:"The Andrew Jackson Library",sub:"A shared sitting room",img:"images/rooms/blue-parlor.jpg",body:"Named for Andrew Jackson, an intimate library and sitting room with a fireplace and wing chairs - one of the shared common spaces open to every guest."},
+    {slug:"reynolds-parlor",name:"Mrs. Alice Kennedy Reynolds Room",sub:"An original 1851 parlor",img:"images/rooms/reynolds-parlor.jpg",body:"One of Knollwood's original 1851 parlors, restored to honor its history. It opens into the Major Reynolds Room to form our largest setting, for luncheons, dinners, and private gatherings."},
+    {slug:"major-reynolds-room",name:"Major Robert Bannon Reynolds Room",sub:"A quiet parlor, up to 4",img:"images/rooms/major-reynolds-room.jpg",body:"A quiet, private parlor seating up to four - ideal for a small meeting, an interview, or a focused working session. It opens into the Mary Alice Kennedy Room beyond."},
     {slug:"sunroom",name:"The Sunroom",sub:"Glass doors to the grounds",img:"images/rooms/sunroom.jpg",body:"A sun-filled room lined with glass doors that open toward the porch and grounds."},
-    {slug:"kitchen",name:"The Kitchen",sub:"Marble & checkerboard stone",img:"images/rooms/kitchenette.jpg",body:"A fully appointed kitchen with marble counters and a classic checkerboard floor, open to every guest."},
-    {slug:"butlers-pantry",name:"The Butler&rsquo;s Pantry",sub:"Dark oak, brass, and marble",img:"images/rooms/butlers-pantry.jpg",body:"A richly finished working pantry in dark oak, with marble counters, brass fittings, and the checkerboard floor."},
+    {slug:"kitchen",name:"The Kitchenette",sub:"Open to every guest",img:"images/rooms/kitchenette.jpg",body:"A fully appointed kitchenette with marble counters and a classic checkerboard floor. Available with any reservation."},
     {slug:"entry-hall",name:"The Entry Hall",sub:"Checkerboard marble & the long view",img:"images/rooms/entry-hall.jpg",body:"The central hall, paved in checkerboard marble, running the depth of the house."}
   ];
 
@@ -435,36 +434,26 @@
   var GARDENS=[
     {name:"The Garden Walk",sub:"The approach to the house",img:"images/gardens/garden-walk.jpg"},
     {name:"The Veranda Gardens",sub:"Boxwoods along the rear portico",img:"images/main/gardens.jpg"},
-    {name:"The Garden Terrace",sub:"Brick terrace & seating",img:"images/main/history.jpg"},
-    {name:"The Magnolia Terrace",sub:"The rear terrace in magnolia shade",img:"images/views/exterior-rear.jpg"},
+    {name:"The Garden Terrace",sub:"The rear terrace in magnolia shade",img:"images/views/exterior-rear.jpg"},
     {name:"The Grounds from Above",sub:"The estate & its gardens",img:"images/main/about.jpg"}
   ];
   var GFEATURES=[
-    {name:"The Restoration Monument",sub:"The restoration monument",img:"images/features/monument.jpg"},
-    {name:"The Carved Crest",sub:"Knollwood, Est. 1851",img:"images/features/carved-sign.jpg"},
-    {name:"Reclaimed Wood",sub:"Handcrafted from the original house",img:"images/features/reclaimed-table.jpg"},
-    {name:"Embossed Leather",sub:"The Knollwood mark",img:"images/features/leather-folder.jpg"},
-    {name:"Leather Coasters",sub:"Coasters in Knollwood leather",img:"images/features/coasters.jpg"},
-    {name:"Original Hardware",sub:"Restored brass",img:"images/features/door-hardware.jpg"},
-    {name:"The Millwork",sub:"Hand-finished paneling",img:"images/features/millwork.jpg"},
-    {name:"Pocket Doors",sub:"Oak & brass flush pulls",img:"images/features/pocket-doors.jpg"},
-    {name:"The Arched Door",sub:"Reeded casing & panel work",img:"images/features/arched-door.jpg"},
-    {name:"Antique Map of Tennessee",sub:"An antique map of Tennessee",img:"images/features/door-and-map.jpg"},
-    {name:"The Butler's Pantry",sub:"Through the oak doorway",img:"images/features/pantry-doorway.jpg"},
-    {name:"The Working Pantry",sub:"Marble counters & checkerboard floor",img:"images/features/pantry-galley.jpg"},
-    {name:"Checkerboard Marble",sub:"The gallery hall",img:"images/features/checkerboard-hall.jpg"},
-    {name:"The Knollwood Crest",sub:"Embossed in leather",img:"images/features/leather-emboss.jpg"}
+    {name:"A Monument to the Craftsmen Who Reshaped Knollwood",sub:"",img:"images/features/monument.jpg"},
+    {name:"The Knollwood Elevation in East Tennessee Pink Marble",sub:"",img:"images/features/carved-sign.jpg"},
+    {name:"The Board Room Table, from Reclaimed Wood",sub:"",img:"images/features/reclaimed-table.jpg"},
+    {name:"Detailed to the Finest Touch",sub:"",img:"images/features/leather-folder.jpg"},
+    {name:"Branded Comforts Throughout the House",sub:"",img:"images/features/coasters.jpg"},
+    {name:"Brass Throughout the Home",sub:"",img:"images/features/door-hardware.jpg"},
+    {name:"Oak-Paneled Walls in the Board Room",sub:"",img:"images/features/millwork.jpg"},
+    {name:"Restored Arched Doorways",sub:"",img:"images/features/door-and-map.jpg"},
+    {name:"A Timeless Kitchenette",sub:"",img:"images/features/pantry-doorway.jpg"}
   ];
   var GVIEWS=[
-    {name:"The Veranda at Dusk",sub:"Looking to the Smokies",img:"images/views/veranda.jpg"},
-    {name:"The Veranda",sub:"Dining with a mountain view",img:"images/views/veranda-day.jpg"},
-    {name:"The Smoky Mountains",sub:"Framed by the veranda columns",img:"images/views/smokies-columns.jpg"},
-    {name:"The Portico at Sunset",sub:"The portico at sunset",img:"images/views/exterior-sunset.jpg"},
-    {name:"The Approach",sub:"From above",img:"images/views/aerial-approach.jpg"},
-    {name:"The House at Golden Hour",sub:"Golden hour from the air",img:"images/views/aerial-golden.jpg"},
-    {name:"The Grounds",sub:"House & gardens from the air",img:"images/views/aerial-grounds.jpg"},
-    {name:"Toward Knoxville",sub:"The long view west",img:"images/views/aerial-valley.jpg"},
-    {name:"The Estate",sub:"Knollwood & its setting",img:"images/views/aerial-estate.jpg"}
+    {name:"An Outdoor Board Room Overlooking the Smoky Mountains",sub:"",img:"images/views/veranda.jpg"},
+    {name:"The Outdoor Board Room",sub:"",img:"images/views/veranda-day.jpg"},
+    {name:"Exceptional Fall Color Across the Smokies",sub:"",img:"images/views/smokies-columns.jpg"},
+    {name:"The Main Entrance at Sunset",sub:"",img:"images/views/exterior-sunset.jpg"},
+    {name:"The House at Golden Hour",sub:"",img:"images/views/aerial-golden.jpg"}
   ];
   var openLB;
   (function(){
@@ -504,7 +493,7 @@
     html+='</div>';
     $("#pvBody").innerHTML=html;
     var lbItems=cfg.items.map(function(f){ return {img:f.img,name:f.name}; });
-    $("#pvBody").querySelectorAll(".tile[data-idx]").forEach(function(b){ b.addEventListener("click",function(){ openLB(lbItems, parseInt(b.getAttribute("data-idx"),10)); }); });
+    $("#pvBody").querySelectorAll(".tile[data-idx]").forEach(function(b){ b.addEventListener("click",function(){ var i=parseInt(b.getAttribute("data-idx"),10); if(cfg.rooms){ location.hash="#/room/"+cfg.items[i].slug; } else { openLB(lbItems, i); } }); });
   }
   function roomPage(f){
     $("#pvBg").className="pvbg"; $("#pvBg").style.backgroundImage="url('"+f.img+"')";
