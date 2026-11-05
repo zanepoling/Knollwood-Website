@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Knollwood - Review Request</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sorts+Mill+Goudy:ital@0;1&display=swap" />
+<link rel="stylesheet" href="https://use.typekit.net/sdm7mjw.css" />
+<style>
+  :root{
+    --ink:#0a0908; --ink-2:#120f0a; --line:rgba(200,163,102,0.22);
+    --ivory:#f2ece0; --ivory-dim:#c9c0b0; --brass:#d3ac68; --brass-hi:#eBcF94;
+    --serif:"ltc-kennerley","Sorts Mill Goudy","Hoefler Text",Georgia,serif;
+    --pad:clamp(1.1rem,4vw,2.4rem);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--ink);color:var(--ivory);font-family:var(--serif);
+    font-size:clamp(1.02rem,0.7rem+0.6vw,1.14rem);line-height:1.6;-webkit-font-smoothing:antialiased;
+    font-variant-ligatures:none;font-feature-settings:"liga" 0,"dlig" 0,"hlig" 0,"calt" 0;}
+  a{color:var(--brass-hi);text-decoration:none;}
+  h1,h2,h3{font-weight:400;margin:0;}
+  .wrap{max-width:620px;margin:0 auto;padding:0 var(--pad) 5rem;}
+  header.bar{position:sticky;top:0;z-index:20;display:flex;justify-content:center;align-items:center;
+    height:86px;background:rgba(10,9,8,.86);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin-bottom:clamp(1.6rem,5vh,3rem);}
+  .wm .wmimg{height:52px;width:auto;display:block;}
+  .eyebrow{font-size:clamp(1.6rem,1.2rem+1.3vw,2.2rem);font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--brass);margin:0 0 .5rem;display:flex;align-items:center;gap:1rem;}
+  .eyebrow::before{content:"";width:2.2rem;height:2px;background:var(--brass);flex:none;}
+  .lead{font-style:italic;color:var(--ivory-dim);margin:0 0 1.6rem;}
+  .card{background:var(--ink-2);border:1px solid var(--line);padding:clamp(1.4rem,4vw,2.2rem);}
+  .box{background:var(--ink);border:1px solid var(--line);border-left:3px solid var(--brass);padding:14px 18px;margin:0 0 1.4rem;line-height:1.55;}
+  .box .nm{font-size:1.2rem;color:var(--ivory);}
+  .box .mut{color:var(--ivory-dim);font-size:.95rem;}
+  .box .rowlab{color:#8a7f6b;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;margin-top:.5rem;}
+  .btn{font-family:var(--serif);font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;color:#fff;
+    border:none;padding:1rem 2.2rem;cursor:pointer;transition:.25s;}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+  .btn.approve{background:#2e7d32;} .btn.approve:hover:not(:disabled){background:#357f39;}
+  .btn.deny{background:#9a3b2e;} .btn.deny:hover:not(:disabled){background:#a84435;}
+  .mark{font-size:2.4rem;}
+  .mark.ok{color:#5fae63;} .mark.no{color:#c2714f;}
+  .mut{color:var(--ivory-dim);}
+  .foot{margin-top:2.4rem;font-size:.78rem;color:var(--ivory-dim);text-align:center;letter-spacing:.04em;}
+</style>
+</head>
+<body>
+<header class="bar"><div class="wm"><img class="wmimg" src="../knollwood-logo.png" alt="Knollwood" /></div></header>
+<div class="wrap">
+  <div id="content" class="card"><p class="mut">Loading request…</p></div>
+  <p class="foot">Knollwood &middot; Team review</p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var ENDPOINT="https://script.google.com/macros/s/AKfycbz9Y_yY7XnRAbqwJVjb7ydLdYcnFzZjpu1ARAPpFY3h_2fgaCEe0AanjCIDcPOTYNKG/exec";
+  var qs=new URLSearchParams(location.search);
+  var id=qs.get('id'), token=qs.get('token'), decision=(qs.get('decision')==='deny')?'deny':'approve';
+  var C=document.getElementById('content');
+  var _n=0;
+  function post(data){
+    return new Promise(function(resolve,reject){
+      var cb="kwcb"+(++_n), s=document.createElement("script");
+      var t=setTimeout(function(){cleanup();reject(new Error("timeout"));},25000);
+      function cleanup(){try{delete window[cb];}catch(e){window[cb]=undefined;} if(s.parentNode)s.parentNode.removeChild(s); clearTimeout(t);}
+      window[cb]=function(d){cleanup();resolve(d);};
+      data.callback=cb;
+      var q=Object.keys(data).map(function(k){return encodeURIComponent(k)+"="+encodeURIComponent(data[k]==null?"":data[k]);}).join("&");
+      s.src=ENDPOINT+"?"+q; s.onerror=function(){cleanup();reject(new Error("network"));};
+      document.body.appendChild(s);
+    });
+  }
+  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function panel(o){
+    return '<div class="box"><div class="nm">'+esc(o.name||'Guest')+'</div>'+
+      (o.organization?'<div class="mut">'+esc(o.organization)+'</div>':'')+
+      '<div class="rowlab">Area</div>'+esc(o.area||'—')+
+      '<div class="rowlab">Date &amp; time</div>'+esc((o.date||'—')+' · '+(o.time||''))+
+      '<div class="rowlab">Guests</div>'+esc(o.guests||'—')+'</div>';
+  }
+  function fail(msg){ C.innerHTML='<p class="eyebrow">Not available</p><p class="mut">'+esc(msg)+'</p>'; }
+
+  if(!id||!token){ fail('This link is missing its details. Please open the Approve or Deny button from the email again.'); return; }
+
+  post({action:'lookup',id:id,token:token}).then(function(j){
+    if(!j||!j.ok){ fail('This link is not valid or has expired.'); return; }
+    if(j.status && j.status!=='Pending'){
+      C.innerHTML='<p class="eyebrow">Already '+esc(j.status)+'</p>'+panel(j)+'<p class="mut">This request has already been marked <b>'+esc(j.status)+'</b>. No action is needed.</p>';
+      return;
+    }
+    var verb=decision==='approve'?'Approve':'Deny';
+    var note=decision==='approve'
+      ? 'Approving will email the guest a confirmation with their date, time, location, the guest-list link, and SOPs.'
+      : 'Denying marks the request denied. No email is sent to the guest.';
+    C.innerHTML='<p class="eyebrow">'+verb+' request</p>'+panel(j)+
+      '<p class="mut">'+note+'</p>'+
+      '<button id="go" class="btn '+decision+'">Confirm '+verb+'</button>';
+    document.getElementById('go').addEventListener('click',function(){
+      var b=this; b.disabled=true; b.textContent='One moment…';
+      post({action:'decide',id:id,token:token,decision:decision}).then(function(r){
+        if(r&&r.ok){
+          if(r.already){
+            C.innerHTML='<p class="eyebrow">Already '+esc(r.status)+'</p><p class="mut">This request was already marked <b>'+esc(r.status)+'</b>. No action taken.</p>';
+          } else if(r.status==='Approved'){
+            C.innerHTML='<p class="eyebrow"><span class="mark ok">&#10003;</span> Approved</p><p class="mut">'+
+              (r.emailed?'A confirmation email with the guest-list link and SOPs has been sent to the guest.':'The request was approved, but the confirmation email could not be sent. Please follow up with the guest directly.')+'</p>';
+          } else {
+            C.innerHTML='<p class="eyebrow">Denied</p><p class="mut">Marked <b>denied</b>. No email was sent to the guest.</p>';
+          }
+        } else {
+          b.disabled=false; b.textContent='Confirm '+verb;
+          C.insertAdjacentHTML('beforeend','<p class="mut" style="color:#c2714f;">Could not complete that. Please try again.</p>');
+        }
+      }).catch(function(){ b.disabled=false; b.textContent='Confirm '+verb;
+        C.insertAdjacentHTML('beforeend','<p class="mut" style="color:#c2714f;">Something went wrong - please try again.</p>'); });
+    });
+  }).catch(function(){ fail('Could not reach the server. Please try again in a moment.'); });
+})();
+</script>
+</body>
+</html>
