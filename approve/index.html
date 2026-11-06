@@ -92,8 +92,8 @@
     }
     var verb=decision==='approve'?'Approve':'Deny';
     var note=decision==='approve'
-      ? 'Approving will email the guest a confirmation with their date, time, location, the guest-list link, and SOPs.'
-      : 'Denying marks the request denied. No email is sent to the guest.';
+      ? 'Approving records the decision only. No email is sent to the guest - please follow up with them personally.'
+      : 'Denying records the decision only. No email is sent to the guest.';
     C.innerHTML='<p class="eyebrow">'+verb+' request</p>'+panel(j)+
       '<p class="mut">'+note+'</p>'+
       '<button id="go" class="btn '+decision+'">Confirm '+verb+'</button>';
@@ -104,8 +104,7 @@
           if(r.already){
             C.innerHTML='<p class="eyebrow">Already '+esc(r.status)+'</p><p class="mut">This request was already marked <b>'+esc(r.status)+'</b>. No action taken.</p>';
           } else if(r.status==='Approved'){
-            C.innerHTML='<p class="eyebrow"><span class="mark ok">&#10003;</span> Approved</p><p class="mut">'+
-              (r.emailed?'A confirmation email with the guest-list link and SOPs has been sent to the guest.':'The request was approved, but the confirmation email could not be sent. Please follow up with the guest directly.')+'</p>';
+            C.innerHTML='<p class="eyebrow"><span class="mark ok">&#10003;</span> Approved</p><p class="mut">Marked approved. No email was sent - please follow up with the guest personally.</p>';
           } else {
             C.innerHTML='<p class="eyebrow">Denied</p><p class="mut">Marked <b>denied</b>. No email was sent to the guest.</p>';
           }

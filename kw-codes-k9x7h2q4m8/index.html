@@ -134,7 +134,7 @@
       } else if(j&&j.error==="auth"){
         $("#err").textContent="This page's key doesn't match the script. Please contact the site admin.";
       } else {
-        $("#err").textContent="Could not generate a code. Please try again.";
+        $("#err").textContent="Could not generate a code"+(j&&j.error?(" ["+j.error+"]"):"")+". Please try again.";
       }
     }).catch(function(){ busy(b,false,"Generate Access Code"); $("#err").textContent="Something went wrong - please try again."; });
   }
