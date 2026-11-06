@@ -67,6 +67,10 @@
         <label class="fl" for="company">Company / Organization</label>
         <input type="text" id="company" autocomplete="off" autocapitalize="words" placeholder="e.g. First Baptist (optional)" />
       </div>
+      <div class="field">
+        <label class="fl" for="email">Contact Email</label>
+        <input type="email" id="email" autocomplete="off" inputmode="email" autocapitalize="off" placeholder="e.g. jon@email.com (optional)" />
+      </div>
       <button class="btn" id="gen" type="button">Generate Access Code</button>
       <div class="err" id="err"></div>
     </div>
@@ -112,10 +116,12 @@
     $("#err").textContent="";
     var name=($("#name").value||"").trim();
     var company=($("#company").value||"").trim();
+    var email=($("#email").value||"").trim();
     if(!name){ $("#err").textContent="Please enter a name."; return; }
+    if(email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ $("#err").textContent="Please enter a valid email, or leave it blank."; return; }
     var who=company ? (name+" — "+company) : name;
     var b=$("#gen"); busy(b,true,"Generate Access Code");
-    post({action:"gencode",who:who,admin:KEY}).then(function(j){
+    post({action:"gencode",who:who,email:email,admin:KEY}).then(function(j){
       busy(b,false,"Generate Access Code");
       if(j&&j.ok){
         lastCode=j.code;
@@ -143,7 +149,7 @@
     } else { $("#copied").textContent="Press and hold the code to copy."; }
   });
   $("#again").addEventListener("click",function(){
-    $("#name").value=""; $("#company").value=""; $("#err").textContent="";
+    $("#name").value=""; $("#company").value=""; $("#email").value=""; $("#err").textContent="";
     $("#done").style.display="none"; $("#form").style.display="block";
     $("#name").focus();
   });
