@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Knollwood - Access Codes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sorts+Mill+Goudy:ital@0;1&display=swap" />
+<link rel="stylesheet" href="https://use.typekit.net/sdm7mjw.css" />
+<style>
+  :root{
+    --ink:#0a0908; --ink-2:#120f0a; --line:rgba(200,163,102,0.22);
+    --ivory:#f2ece0; --ivory-dim:#c9c0b0; --brass:#d3ac68; --brass-hi:#eBcF94;
+    --serif:"ltc-kennerley","Sorts Mill Goudy","Hoefler Text",Georgia,serif;
+    --sans:"Helvetica Neue",Arial,sans-serif;
+    --pad:clamp(1.1rem,4vw,2.4rem);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--ink);color:var(--ivory);font-family:var(--serif);
+    font-size:clamp(1.02rem,0.7rem+0.6vw,1.14rem);line-height:1.6;-webkit-font-smoothing:antialiased;
+    font-variant-ligatures:none;font-feature-settings:"liga" 0,"dlig" 0,"hlig" 0,"calt" 0;}
+  h1,h2,h3{font-weight:400;margin:0;}
+  .wrap{max-width:480px;margin:0 auto;padding:0 var(--pad) 5rem;}
+  header.bar{position:sticky;top:0;z-index:20;display:flex;justify-content:center;align-items:center;
+    height:86px;background:rgba(10,9,8,.86);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin-bottom:clamp(1.6rem,5vh,3rem);}
+  .wm .wmimg{height:52px;width:auto;display:block;}
+  .eyebrow{font-size:clamp(1.6rem,1.2rem+1.3vw,2.2rem);font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--brass);margin:0 0 .5rem;display:flex;align-items:center;gap:1rem;}
+  .eyebrow::before{content:"";width:2.2rem;height:2px;background:var(--brass);flex:none;}
+  .lead{font-style:italic;color:var(--ivory-dim);margin:0 0 1.6rem;}
+  .card{background:var(--ink-2);border:1px solid var(--line);padding:clamp(1.4rem,4vw,2.2rem);}
+  .field{margin-bottom:1.1rem;}
+  label.fl{display:block;font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:var(--brass);margin-bottom:.45rem;}
+  input{width:100%;background:var(--ink);border:1px solid var(--line);color:var(--ivory);
+    font-family:var(--serif);font-size:1.05rem;padding:.8rem .85rem;}
+  input:focus{border-color:var(--brass);outline:none;}
+  .btn{width:100%;font-family:var(--serif);font-size:.85rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);
+    background:var(--brass);border:1px solid var(--brass);padding:1.05rem 2rem;cursor:pointer;transition:.25s;}
+  .btn:hover:not(:disabled){background:var(--brass-hi);border-color:var(--brass-hi);}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+  .btn.ghost{background:transparent;color:var(--ivory);margin-top:.9rem;}
+  .btn.ghost:hover:not(:disabled){color:var(--brass-hi);border-color:var(--brass-hi);}
+  .err{color:#e0a35a;font-size:.86rem;min-height:1.1rem;margin-top:.6rem;}
+  .result{text-align:center;}
+  .result .who{color:var(--ivory-dim);font-size:.95rem;margin-bottom:.4rem;}
+  .code{font-family:var(--sans);font-weight:700;font-size:clamp(2rem,1rem+6vw,2.8rem);letter-spacing:.08em;
+    color:var(--brass-hi);background:var(--ink);border:1px dashed var(--brass);padding:1.1rem .5rem;margin:.4rem 0 1rem;word-break:break-all;}
+  .exp{color:var(--ivory-dim);font-size:.88rem;margin-bottom:1.2rem;}
+  .copied{color:#8fcf93;font-size:.86rem;min-height:1.1rem;}
+  .foot{margin-top:2.4rem;font-size:.78rem;color:var(--ivory-dim);text-align:center;letter-spacing:.04em;}
+</style>
+</head>
+<body>
+<header class="bar"><div class="wm"><img class="wmimg" src="../knollwood-logo.png" alt="Knollwood" /></div></header>
+<div class="wrap">
+
+  <section id="form">
+    <p class="eyebrow">Access Codes</p>
+    <p class="lead">Generate an access code for a guest. The code is added to the Access Codes tab and is valid for 30 days.</p>
+    <div class="card">
+      <div class="field">
+        <label class="fl" for="who">Issued to (name or organization)</label>
+        <input type="text" id="who" autocomplete="off" autocapitalize="words" placeholder="e.g. First Baptist - Jon Smith" />
+      </div>
+      <div class="field">
+        <label class="fl" for="admin">Admin passcode</label>
+        <input type="password" id="admin" autocomplete="off" placeholder="Team passcode" />
+      </div>
+      <button class="btn" id="gen" type="button">Generate Access Code</button>
+      <div class="err" id="err"></div>
+    </div>
+  </section>
+
+  <section id="done" style="display:none;">
+    <p class="eyebrow">New Code</p>
+    <div class="card result">
+      <div class="who" id="rwho"></div>
+      <div class="code" id="rcode"></div>
+      <div class="exp" id="rexp"></div>
+      <button class="btn" id="copy" type="button">Copy Code</button>
+      <div class="copied" id="copied"></div>
+      <button class="btn ghost" id="again" type="button">Generate Another</button>
+    </div>
+  </section>
+
+  <p class="foot">Knollwood &middot; Team tool</p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var ENDPOINT="https://script.google.com/macros/s/AKfycbz9Y_yY7XnRAbqwJVjb7ydLdYcnFzZjpu1ARAPpFY3h_2fgaCEe0AanjCIDcPOTYNKG/exec";
+  var $=function(s){return document.querySelector(s);};
+  var KEY="kw_admin";
+  var _n=0, lastCode="";
+  function post(data){
+    return new Promise(function(resolve,reject){
+      var cb="kwcb"+(++_n), s=document.createElement("script");
+      var t=setTimeout(function(){cleanup();reject(new Error("timeout"));},25000);
+      function cleanup(){try{delete window[cb];}catch(e){window[cb]=undefined;} if(s.parentNode)s.parentNode.removeChild(s); clearTimeout(t);}
+      window[cb]=function(d){cleanup();resolve(d);};
+      data.callback=cb;
+      var q=Object.keys(data).map(function(k){return encodeURIComponent(k)+"="+encodeURIComponent(data[k]==null?"":data[k]);}).join("&");
+      s.src=ENDPOINT+"?"+q; s.onerror=function(){cleanup();reject(new Error("network"));};
+      document.body.appendChild(s);
+    });
+  }
+  function busy(b,on,label){b.disabled=on;b.textContent=on?"One moment…":label;}
+
+  try{ var a=localStorage.getItem(KEY); if(a) $("#admin").value=a; }catch(e){}
+
+  function generate(){
+    $("#err").textContent="";
+    var who=($("#who").value||"").trim();
+    var admin=($("#admin").value||"").trim();
+    if(!who){ $("#err").textContent="Please enter who the code is for."; return; }
+    if(!admin){ $("#err").textContent="Please enter the admin passcode."; return; }
+    var b=$("#gen"); busy(b,true,"Generate Access Code");
+    post({action:"gencode",who:who,admin:admin}).then(function(j){
+      busy(b,false,"Generate Access Code");
+      if(j&&j.ok){
+        try{ localStorage.setItem(KEY,admin); }catch(e){}
+        lastCode=j.code;
+        $("#rwho").textContent=j.who?("For "+j.who):"";
+        $("#rcode").textContent=j.code;
+        $("#rexp").textContent=j.expires?("Valid through "+j.expires):"Valid for 30 days";
+        $("#copied").textContent="";
+        $("#form").style.display="none"; $("#done").style.display="block";
+        window.scrollTo(0,0);
+      } else if(j&&j.error==="auth"){
+        $("#err").textContent="That passcode isn't correct.";
+      } else {
+        $("#err").textContent="Could not generate a code. Please try again.";
+      }
+    }).catch(function(){ busy(b,false,"Generate Access Code"); $("#err").textContent="Something went wrong - please try again."; });
+  }
+  $("#gen").addEventListener("click",generate);
+  $("#who").addEventListener("keydown",function(e){ if(e.key==="Enter"){e.preventDefault();generate();} });
+  $("#admin").addEventListener("keydown",function(e){ if(e.key==="Enter"){e.preventDefault();generate();} });
+
+  $("#copy").addEventListener("click",function(){
+    var done=function(){ $("#copied").textContent="Copied to clipboard"; };
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(lastCode).then(done,function(){ $("#copied").textContent="Press and hold the code to copy."; });
+    } else { $("#copied").textContent="Press and hold the code to copy."; }
+  });
+  $("#again").addEventListener("click",function(){
+    $("#who").value=""; $("#err").textContent="";
+    $("#done").style.display="none"; $("#form").style.display="block";
+    $("#who").focus();
+  });
+})();
+</script>
+</body>
+</html>
