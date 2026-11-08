@@ -32,11 +32,14 @@
   .card{background:var(--ink-2);border:1px solid var(--line);padding:clamp(1.4rem,4vw,2.2rem);}
   .field{margin-bottom:1.1rem;}
   label.fl{display:block;font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:var(--brass);margin-bottom:.45rem;}
-  input{width:100%;background:var(--ink);border:1px solid var(--line);color:var(--ivory);
+  input,select{width:100%;background:var(--ink);border:1px solid var(--line);color:var(--ivory);
     font-family:var(--serif);font-size:1.05rem;padding:.8rem .85rem;}
-  input:focus{border-color:var(--brass);outline:none;}
+  select{color-scheme:dark;cursor:pointer;}
+  input:focus,select:focus{border-color:var(--brass);outline:none;}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:1rem;} @media(max-width:460px){.two{grid-template-columns:1fr;}}
+  .two .field{margin-bottom:0;}
   .btn{width:100%;font-family:var(--serif);font-size:.85rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);
-    background:var(--brass);border:1px solid var(--brass);padding:1.05rem 2rem;cursor:pointer;transition:.25s;}
+    background:var(--brass);border:1px solid var(--brass);padding:1.05rem 2rem;cursor:pointer;transition:.25s;margin-top:.3rem;}
   .btn:hover:not(:disabled){background:var(--brass-hi);border-color:var(--brass-hi);}
   .btn:disabled{opacity:.5;cursor:not-allowed;}
   .btn.ghost{background:transparent;color:var(--ivory);margin-top:.9rem;}
@@ -59,9 +62,15 @@
     <p class="eyebrow">Access Codes</p>
     <p class="lead">Generate an access code for a guest. The code is added to the Access Codes tab and is valid for 30 days.</p>
     <div class="card">
-      <div class="field">
-        <label class="fl" for="name">Name</label>
-        <input type="text" id="name" autocomplete="off" autocapitalize="words" placeholder="e.g. Jon Smith" />
+      <div class="two" style="margin-bottom:1.1rem;">
+        <div class="field">
+          <label class="fl" for="first">First Name</label>
+          <input type="text" id="first" autocomplete="off" autocapitalize="words" placeholder="Jon" />
+        </div>
+        <div class="field">
+          <label class="fl" for="last">Last Name</label>
+          <input type="text" id="last" autocomplete="off" autocapitalize="words" placeholder="Smith" />
+        </div>
       </div>
       <div class="field">
         <label class="fl" for="company">Company / Organization</label>
@@ -70,6 +79,14 @@
       <div class="field">
         <label class="fl" for="email">Contact Email</label>
         <input type="email" id="email" autocomplete="off" inputmode="email" autocapitalize="off" placeholder="e.g. jon@email.com (optional)" />
+      </div>
+      <div class="field">
+        <label class="fl" for="phone">Mobile Phone</label>
+        <input type="tel" id="phone" autocomplete="off" inputmode="tel" placeholder="e.g. (865) 555-1234 (optional)" />
+      </div>
+      <div class="field">
+        <label class="fl" for="by">Authorized By</label>
+        <select id="by"><option value="">Select your name…</option></select>
       </div>
       <button class="btn" id="gen" type="button">Generate Access Code</button>
       <div class="err" id="err"></div>
@@ -96,8 +113,17 @@
   "use strict";
   var ENDPOINT="https://script.google.com/macros/s/AKfycbz9Y_yY7XnRAbqwJVjb7ydLdYcnFzZjpu1ARAPpFY3h_2fgaCEe0AanjCIDcPOTYNKG/exec";
   var KEY="knoll-codes-2026";   // must match ADMIN_KEY in the Apps Script
+
+  // MG team members for the "Authorized By" dropdown — edit this list anytime.
+  var MG_USERS=["Jordan Mollenhour","Dustin Gross","Ryan Connor","Keith Jackson","TJ Harker","Eli Campbell","Wes Emison","Derrick Leiby","Jonathan Edwards","Meagan Dixon","JP Dooley","Sam Lawrence","Zane Poling"];
+
   var $=function(s){return document.querySelector(s);};
   var _n=0, lastCode="";
+
+  var sel=$("#by");
+  MG_USERS.forEach(function(n){ var o=document.createElement("option"); o.value=n; o.textContent=n; sel.appendChild(o); });
+  try{ var saved=localStorage.getItem("kw_by"); if(saved && MG_USERS.indexOf(saved)>-1) sel.value=saved; }catch(e){}
+
   function post(data){
     return new Promise(function(resolve,reject){
       var cb="kwcb"+(++_n), s=document.createElement("script");
@@ -114,14 +140,18 @@
 
   function generate(){
     $("#err").textContent="";
-    var name=($("#name").value||"").trim();
+    var first=($("#first").value||"").trim();
+    var last=($("#last").value||"").trim();
     var company=($("#company").value||"").trim();
     var email=($("#email").value||"").trim();
-    if(!name){ $("#err").textContent="Please enter a name."; return; }
+    var phone=($("#phone").value||"").trim();
+    var by=sel.value;
+    if(!first||!last){ $("#err").textContent="Please enter the guest's first and last name."; return; }
     if(email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ $("#err").textContent="Please enter a valid email, or leave it blank."; return; }
-    var who=company ? (name+" — "+company) : name;
+    if(!by){ $("#err").textContent="Please select your name under “Authorized By.”"; return; }
+    try{ localStorage.setItem("kw_by", by); }catch(e){}
     var b=$("#gen"); busy(b,true,"Generate Access Code");
-    post({action:"gencode",who:who,email:email,admin:KEY}).then(function(j){
+    post({action:"gencode",first:first,last:last,company:company,email:email,phone:phone,by:by,admin:KEY}).then(function(j){
       busy(b,false,"Generate Access Code");
       if(j&&j.ok){
         lastCode=j.code;
@@ -139,8 +169,9 @@
     }).catch(function(){ busy(b,false,"Generate Access Code"); $("#err").textContent="Something went wrong - please try again."; });
   }
   $("#gen").addEventListener("click",generate);
-  $("#name").addEventListener("keydown",function(e){ if(e.key==="Enter"){e.preventDefault();$("#company").focus();} });
-  $("#company").addEventListener("keydown",function(e){ if(e.key==="Enter"){e.preventDefault();generate();} });
+  ["first","last","company","email","phone"].forEach(function(id){
+    $("#"+id).addEventListener("keydown",function(e){ if(e.key==="Enter"){e.preventDefault();generate();} });
+  });
 
   $("#copy").addEventListener("click",function(){
     var done=function(){ $("#copied").textContent="Copied to clipboard"; };
@@ -149,9 +180,10 @@
     } else { $("#copied").textContent="Press and hold the code to copy."; }
   });
   $("#again").addEventListener("click",function(){
-    $("#name").value=""; $("#company").value=""; $("#email").value=""; $("#err").textContent="";
+    $("#first").value=""; $("#last").value=""; $("#company").value=""; $("#email").value=""; $("#phone").value="";
+    $("#err").textContent="";  // keep the selected "Authorized By" name
     $("#done").style.display="none"; $("#form").style.display="block";
-    $("#name").focus();
+    $("#first").focus();
   });
 })();
 </script>
