@@ -50,25 +50,22 @@
   .hint{color:var(--ivory-dim);font-size:.86rem;}
   .prog{color:var(--brass);font-size:.86rem;min-height:1.1rem;margin-top:.6rem;letter-spacing:.04em;}
 
-  /* current guest list */
-  .listhead{display:flex;align-items:baseline;justify-content:space-between;margin:0 0 .7rem;}
-  .listhead h3{font-size:1.3rem;color:var(--ivory);}
-  .listhead .ct{font-family:var(--sans);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;color:var(--brass);}
-  .glist{list-style:none;margin:0 0 1.6rem;padding:0;border:1px solid var(--line);}
-  .glist li{display:flex;gap:.8rem;align-items:baseline;padding:.6rem .9rem;border-bottom:1px solid rgba(200,163,102,.12);font-size:1.02rem;}
-  .glist li:last-child{border-bottom:none;}
-  .glist li .num{font-family:var(--sans);font-size:.7rem;color:var(--brass);width:1.6rem;flex:none;}
-  .glist.empty-note{border:none;color:var(--ivory-dim);font-style:italic;padding:0;}
-  .glist.empty-note li{border:none;padding:.2rem 0;}
+  .listhead{display:flex;align-items:baseline;justify-content:space-between;margin:0 0 1rem;}
+  .listhead .sub{font-family:var(--sans);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;color:var(--brass);}
+  .listhead .ct{font-family:var(--sans);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ivory-dim);}
 
-  /* add rows */
-  .att{display:grid;grid-template-columns:1fr 1fr auto;gap:1rem;align-items:end;margin-bottom:.9rem;}
+  /* editable guest rows */
+  .att{display:grid;grid-template-columns:auto 1fr 1fr auto;gap:.8rem;align-items:end;margin-bottom:.8rem;}
+  .att .num{font-family:var(--sans);font-size:.72rem;color:var(--brass);width:1.4rem;padding-bottom:.85rem;text-align:right;}
   .att .field{margin:0;}
-  .att .rm{background:none;border:1px solid var(--line);color:var(--ivory-dim);width:44px;height:44px;flex:none;cursor:pointer;font-size:1.2rem;line-height:1;transition:.2s;}
+  .att .rm{background:none;border:1px solid var(--line);color:var(--ivory-dim);width:42px;height:44px;flex:none;cursor:pointer;font-size:1.2rem;line-height:1;transition:.2s;}
   .att .rm:hover{border-color:var(--brass);color:var(--brass-hi);}
-  @media(max-width:560px){.att{grid-template-columns:1fr 1fr;} .att .rm{grid-column:1 / -1;width:100%;height:auto;padding:.5rem;}}
+  @media(max-width:560px){
+    .att{grid-template-columns:1fr 1fr auto;}
+    .att .num{display:none;}
+    .att .rm{grid-column:1 / -1;width:100%;height:auto;padding:.5rem;}
+  }
   .addrow{margin:.2rem 0 1.5rem;}
-  .subhead{font-family:var(--sans);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;color:var(--brass);margin:0 0 1rem;}
 
   .foot{margin-top:2.4rem;font-size:.78rem;color:var(--ivory-dim);text-align:center;letter-spacing:.04em;}
 </style>
@@ -91,24 +88,19 @@
     </div>
   </section>
 
-  <!-- STEP 2 - LIST + ADD -->
+  <!-- STEP 2 - EDITABLE LIST -->
   <section class="step" id="step-list">
     <p class="eyebrow">Your Guest List</p>
-    <p class="lead">Add everyone you are expecting. You can return anytime with your code to see this list and add more.</p>
-
-    <div class="listhead"><h3 id="listTitle">Your guests</h3><span class="ct" id="listCount"></span></div>
-    <ul class="glist" id="glist"></ul>
-
+    <p class="lead">Add, edit, or remove the people you are expecting, then Save. You can return anytime with your code to update it.</p>
     <div class="card">
-      <div class="subhead">Add guests</div>
+      <div class="listhead"><span class="sub">Guests</span><span class="ct" id="listCount"></span></div>
       <div id="rows"></div>
       <div class="addrow"><button class="btn ghost" type="button" id="addBtn">+ Add another guest</button></div>
-      <button class="btn" type="button" id="saveBtn">Add to List</button>
+      <button class="btn" type="button" id="saveBtn">Save List</button>
       <div class="prog" id="prog"></div>
       <div class="ok" id="okmsg"></div>
       <div class="err" id="listErr"></div>
     </div>
-
     <p class="hint" style="margin-top:1.2rem;"><a id="diff">Use a different access code</a></p>
   </section>
 
@@ -121,7 +113,7 @@
   var ENDPOINT="https://script.google.com/macros/s/AKfycbz9Y_yY7XnRAbqwJVjb7ydLdYcnFzZjpu1ARAPpFY3h_2fgaCEe0AanjCIDcPOTYNKG/exec";
   var PREVIEW=location.hostname.indexOf("claude")!==-1 || location.protocol==="file:" || location.hostname==="";
   var $=function(s,r){return (r||document).querySelector(s);};
-  var activeCode="", current=[];
+  var activeCode="";
   var CODE_KEY="kw_code", CODE_TTL=60*24*3600*1000;
   function saveCode(v){try{localStorage.setItem(CODE_KEY,JSON.stringify({code:v,ts:Date.now()}));}catch(e){}}
   function loadCode(){try{var o=JSON.parse(localStorage.getItem(CODE_KEY)||"null");if(o&&o.code&&(Date.now()-o.ts)<CODE_TTL)return o.code;}catch(e){}return "";}
@@ -141,87 +133,73 @@
   }
   function show(id){ document.querySelectorAll(".step").forEach(function(s){s.classList.remove("active");}); $(id).classList.add("active"); window.scrollTo(0,0); }
   function busy(b,on,label){b.disabled=on;b.textContent=on?"One moment…":label;}
-  function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
-  function key(f,l){return (String(f).trim()+"|"+String(l).trim()).toLowerCase();}
 
-  function renderCurrent(){
-    var ul=$("#glist");
-    if(!current.length){
-      ul.className="glist empty-note";
-      ul.innerHTML="<li>No guests added yet - add your first below.</li>";
-      $("#listCount").textContent="";
-      return;
-    }
-    ul.className="glist";
-    ul.innerHTML=current.map(function(g,i){
-      return '<li><span class="num">'+(i+1)+'</span><span>'+esc((g.first+" "+g.last).trim())+'</span></li>';
-    }).join('');
-    $("#listCount").textContent=current.length+(current.length===1?" guest":" guests");
-  }
-
-  /* ---- add rows ---- */
+  /* ---- editable rows ---- */
   var rows=$("#rows");
-  function addRow(focus){
+  function renumber(){
+    var i=1;
+    rows.querySelectorAll(".att").forEach(function(r){ r.querySelector(".num").textContent=i++; });
+  }
+  function addRow(first,last,focus){
     var d=document.createElement("div"); d.className="att";
     d.innerHTML=
+      '<span class="num"></span>'+
       '<div class="field"><label class="fl">First Name</label><input type="text" class="fn" autocomplete="given-name" /></div>'+
       '<div class="field"><label class="fl">Last Name</label><input type="text" class="ln" autocomplete="family-name" /></div>'+
       '<button type="button" class="rm" aria-label="Remove">×</button>';
-    d.querySelector(".rm").addEventListener("click",function(){ d.remove(); if(!rows.querySelector(".att")) addRow(); });
-    rows.appendChild(d);
+    if(first) d.querySelector(".fn").value=first;
+    if(last) d.querySelector(".ln").value=last;
+    d.querySelector(".rm").addEventListener("click",function(){ d.remove(); if(!rows.querySelector(".att")) addRow("","",true); renumber(); });
+    rows.appendChild(d); renumber();
     if(focus) d.querySelector(".fn").focus();
   }
-  function resetRows(){ rows.innerHTML=""; addRow(); addRow(); addRow(); }
-  $("#addBtn").addEventListener("click",function(){ addRow(true); });
+  function seedRows(list){
+    rows.innerHTML="";
+    if(list && list.length){ list.forEach(function(g){ addRow(g.first,g.last); }); }
+    else { addRow(); addRow(); addRow(); }
+  }
+  function setCount(n){ $("#listCount").textContent = n ? (n+(n===1?" guest saved":" guests saved")) : "None saved yet"; }
+  $("#addBtn").addEventListener("click",function(){ addRow("","",true); });
 
   /* ---- step 1: code login ---- */
   function tryCode(){
     var v=($("#code").value||"").trim(); $("#codeErr").textContent="";
     if(!v){$("#codeErr").textContent="Please enter your access code.";return;}
-    if(PREVIEW){activeCode=v;saveCode(v);current=[];renderCurrent();resetRows();show("#step-list");return;}
+    if(PREVIEW){activeCode=v;saveCode(v);seedRows([]);setCount(0);$("#okmsg").textContent="";$("#listErr").textContent="";show("#step-list");return;}
     var b=$("#codeBtn"); busy(b,true,"Continue");
     post({action:"guestlist",code:v}).then(function(j){
       busy(b,false,"Continue");
-      if(j&&j.ok){ activeCode=v; saveCode(v); current=(j.guests||[]); renderCurrent(); resetRows(); show("#step-list"); }
+      if(j&&j.ok){ activeCode=v; saveCode(v); var g=j.guests||[]; seedRows(g); setCount(g.length); $("#okmsg").textContent=""; $("#listErr").textContent=""; show("#step-list"); }
       else{ $("#codeErr").textContent="That code isn't recognized or has expired. Please check with Knollwood."; }
     }).catch(function(){ busy(b,false,"Continue"); $("#codeErr").textContent="Something went wrong - please try again, or email knollwood@mollenhourgross.com."; });
   }
   $("#codeBtn").addEventListener("click",tryCode);
   $("#code").addEventListener("keydown",function(e){ if(e.key==="Enter"){e.preventDefault();tryCode();} });
 
-  /* ---- step 2: add guests ---- */
+  /* ---- step 2: save the list ---- */
   $("#saveBtn").addEventListener("click",function(){
     $("#listErr").textContent=""; $("#okmsg").textContent=""; $("#prog").textContent="";
-    var toAdd=[], partial=false, dupe=0;
-    var have={}; current.forEach(function(g){ have[key(g.first,g.last)]=true; });
+    var list=[], partial=false;
     rows.querySelectorAll(".att").forEach(function(r){
       var f=(r.querySelector(".fn").value||"").trim(), l=(r.querySelector(".ln").value||"").trim();
-      if(f&&l){ var k=key(f,l); if(have[k]){dupe++;} else { have[k]=true; toAdd.push({first:f,last:l}); } }
+      if(f&&l){ list.push([f,l]); }
       else if(f||l){ partial=true; }
     });
-    if(partial){$("#listErr").textContent="Please enter both a first and last name for each guest (or clear the empty one).";return;}
-    if(!toAdd.length){ $("#listErr").textContent = dupe ? "Those guests are already on your list." : "Please add at least one guest."; return; }
+    if(partial){ $("#listErr").textContent="Please enter both a first and last name for each guest (or remove the empty row)."; return; }
+    var payload=JSON.stringify(list);
+    if(payload.length>7000){ $("#listErr").textContent="This list is very large - please email it to knollwood@mollenhourgross.com and we'll add it for you."; return; }
     var sb=$("#saveBtn"); sb.disabled=true;
-    if(PREVIEW){ toAdd.forEach(function(g){current.push(g);}); renderCurrent(); resetRows(); sb.disabled=false; $("#okmsg").textContent="Added "+toAdd.length+" to your list."; return; }
-    var i=0, failed=0;
-    function next(){
-      if(i>=toAdd.length){
-        sb.disabled=false; $("#prog").textContent="";
-        if(failed===0){ renderCurrent(); resetRows(); $("#okmsg").textContent="Added "+toAdd.length+(toAdd.length===1?" guest":" guests")+" to your list."+(dupe?(" ("+dupe+" already on the list.)"):""); }
-        else{ $("#listErr").textContent=failed+" of "+toAdd.length+" could not be saved. Your code may have expired - please email knollwood@mollenhourgross.com."; }
-        return;
-      }
-      $("#prog").textContent="Adding "+(i+1)+" of "+toAdd.length+"…";
-      post({action:"attendee",code:activeCode,first:toAdd[i].first,last:toAdd[i].last}).then(function(j){
-        if(j&&j.ok){ current.push(toAdd[i]); } else { failed++; }
-        i++; next();
-      }).catch(function(){ failed++; i++; next(); });
-    }
-    next();
+    if(PREVIEW){ setCount(list.length); sb.disabled=false; $("#okmsg").textContent="Saved "+list.length+" guest(s)."; return; }
+    $("#prog").textContent="Saving…";
+    post({action:"savelist",code:activeCode,guests:payload}).then(function(j){
+      sb.disabled=false; $("#prog").textContent="";
+      if(j&&j.ok){ setCount(j.count); $("#okmsg").textContent="Saved "+j.count+(j.count===1?" guest":" guests")+" to your list."; }
+      else{ $("#listErr").textContent="Could not save your list. Your code may have expired - please email knollwood@mollenhourgross.com."; }
+    }).catch(function(){ sb.disabled=false; $("#prog").textContent=""; $("#listErr").textContent="Something went wrong - please try again."; });
   });
 
   /* ---- different code ---- */
-  $("#diff").addEventListener("click",function(){ activeCode=""; current=[]; $("#code").value=""; $("#codeErr").textContent=""; show("#step-code"); });
+  $("#diff").addEventListener("click",function(){ activeCode=""; $("#code").value=""; $("#codeErr").textContent=""; show("#step-code"); });
 
   /* ---- prefill last code ---- */
   (function(){ var c=loadCode(); if(c){ $("#code").value=c; } })();
