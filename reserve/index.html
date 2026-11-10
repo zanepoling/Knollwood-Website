@@ -381,7 +381,11 @@
     var disp=$("#dateDisplay"), hid=$("#date"), cal=$("#dpCal");
     if(!disp||!hid||!cal) return;
     var today=new Date(); today.setHours(0,0,0,0);
-    var view=new Date(today.getFullYear(), today.getMonth(), 1);
+    // Reservations open 12/9/2026 — black out every date before then.
+    // Once that date passes, minDate falls back to today automatically.
+    var OPENDATE=new Date(2026,11,9); OPENDATE.setHours(0,0,0,0);
+    var minDate=(today>OPENDATE)?today:OPENDATE;
+    var view=new Date(minDate.getFullYear(), minDate.getMonth(), 1);
     var sel=null;
     var MON=["January","February","March","April","May","June","July","August","September","October","November","December"];
     var DOW=["Su","Mo","Tu","We","Th","Fr","Sa"];
@@ -395,7 +399,7 @@
       DOW.forEach(function(d){h+='<span class="dp-dow">'+d+'</span>';});
       for(var i=0;i<startDow;i++) h+='<span class="dp-cell dp-empty"></span>';
       for(var day=1;day<=days;day++){
-        var cur=new Date(y,m,day), dis=cur<today, isSel=sel&&iso(cur)===iso(sel);
+        var cur=new Date(y,m,day), dis=cur<minDate, isSel=sel&&iso(cur)===iso(sel);
         h+='<button type="button" class="dp-cell'+(dis?' dp-dis':'')+(isSel?' dp-sel':'')+'"'+(dis?' disabled':'')+' data-day="'+day+'">'+day+'</button>';
       }
       cal.innerHTML=h+'</div>';
