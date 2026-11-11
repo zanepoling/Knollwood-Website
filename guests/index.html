@@ -7,8 +7,14 @@
 <title>Knollwood - Guest List</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preconnect" href="https://use.typekit.net" crossorigin />
+<!-- Fonts load without blocking first paint; the page shows instantly in a serif fallback, then swaps. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sorts+Mill+Goudy:ital@0;1&display=swap" media="print" onload="this.media='all'" />
+<link rel="stylesheet" href="https://use.typekit.net/sdm7mjw.css" media="print" onload="this.media='all'" />
+<noscript>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sorts+Mill+Goudy:ital@0;1&display=swap" />
 <link rel="stylesheet" href="https://use.typekit.net/sdm7mjw.css" />
+</noscript>
 <style>
   :root{
     --ink:#0a0908; --ink-2:#120f0a; --line:rgba(200,163,102,0.22);
@@ -119,16 +125,31 @@
   function loadCode(){try{var o=JSON.parse(localStorage.getItem(CODE_KEY)||"null");if(o&&o.code&&(Date.now()-o.ts)<CODE_TTL)return o.code;}catch(e){}return "";}
 
   var _n=0;
-  function post(data){
+  // One JSONP attempt with its own timeout.
+  function postOnce(data, timeoutMs){
     return new Promise(function(resolve,reject){
       var cb="kwcb"+(++_n), s=document.createElement("script");
-      var t=setTimeout(function(){cleanup();reject(new Error("timeout"));},25000);
-      function cleanup(){try{delete window[cb];}catch(e){window[cb]=undefined;} if(s.parentNode)s.parentNode.removeChild(s); clearTimeout(t);}
+      var t=setTimeout(function(){cleanup();reject(new Error("timeout"));},timeoutMs);
+      function cleanup(){ window[cb]=function(){}; if(s.parentNode)s.parentNode.removeChild(s); clearTimeout(t); }
       window[cb]=function(d){cleanup();resolve(d);};
-      data.callback=cb;
-      var q=Object.keys(data).map(function(k){return encodeURIComponent(k)+"="+encodeURIComponent(data[k]==null?"":data[k]);}).join("&");
+      var d2={}; Object.keys(data).forEach(function(k){d2[k]=data[k];}); d2.callback=cb;
+      var q=Object.keys(d2).map(function(k){return encodeURIComponent(k)+"="+encodeURIComponent(d2[k]==null?"":d2[k]);}).join("&");
       s.src=ENDPOINT+"?"+q; s.onerror=function(){cleanup();reject(new Error("network"));};
       document.body.appendChild(s);
+    });
+  }
+  // Retry automatically on a cold-start miss: up to 4 tries, ~18s each, short pause between.
+  // This is what refreshing by hand did — now it happens invisibly.
+  function post(data){
+    var tries=4, perTimeout=18000, gap=800;
+    return new Promise(function(resolve,reject){
+      var i=0;
+      (function go(){
+        i++;
+        postOnce(data, perTimeout).then(resolve, function(err){
+          if(i<tries){ setTimeout(go, gap); } else { reject(err); }
+        });
+      })();
     });
   }
   function show(id){ document.querySelectorAll(".step").forEach(function(s){s.classList.remove("active");}); $(id).classList.add("active"); window.scrollTo(0,0); }
@@ -167,11 +188,14 @@
     if(!v){$("#codeErr").textContent="Please enter your access code.";return;}
     if(PREVIEW){activeCode=v;saveCode(v);seedRows([]);setCount(0);$("#okmsg").textContent="";$("#listErr").textContent="";show("#step-list");return;}
     var b=$("#codeBtn"); busy(b,true,"Continue");
+    // reassure if the first (cold-start) load runs long
+    var slow=setTimeout(function(){ $("#codeErr").style.color="var(--ivory-dim)"; $("#codeErr").textContent="Connecting… the first load can take a few seconds."; },3500);
+    function clearSlow(){ clearTimeout(slow); $("#codeErr").style.color=""; }
     post({action:"guestlist",code:v}).then(function(j){
-      busy(b,false,"Continue");
+      clearSlow(); busy(b,false,"Continue"); $("#codeErr").textContent="";
       if(j&&j.ok){ activeCode=v; saveCode(v); var g=j.guests||[]; seedRows(g); setCount(g.length); $("#okmsg").textContent=""; $("#listErr").textContent=""; show("#step-list"); }
       else{ $("#codeErr").textContent="That code isn't recognized or has expired. Please check with Knollwood."; }
-    }).catch(function(){ busy(b,false,"Continue"); $("#codeErr").textContent="Something went wrong - please try again, or email knollwood@mollenhourgross.com."; });
+    }).catch(function(){ clearSlow(); busy(b,false,"Continue"); $("#codeErr").textContent="We couldn't reach the server after several tries. Please wait a moment and try again, or email knollwood@mollenhourgross.com."; });
   }
   $("#codeBtn").addEventListener("click",tryCode);
   $("#code").addEventListener("keydown",function(e){ if(e.key==="Enter"){e.preventDefault();tryCode();} });

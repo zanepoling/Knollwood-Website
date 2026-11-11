@@ -501,8 +501,8 @@
     });
     html+='</div>';
     $("#pvBody").innerHTML=html;
-    var lbItems=cfg.items.map(function(f){ return {img:f.img,name:f.name}; });
-    $("#pvBody").querySelectorAll(".tile[data-idx]").forEach(function(b){ b.addEventListener("click",function(){ var i=parseInt(b.getAttribute("data-idx"),10); if(cfg.rooms){ location.hash="#/room/"+cfg.items[i].slug; } else { openLB(lbItems, i); } }); });
+    var lbItems=cfg.items.map(function(f){ return {img:f.img,name:f.name,sub:f.sub}; });
+    $("#pvBody").querySelectorAll(".tile[data-idx]").forEach(function(b){ b.addEventListener("click",function(){ openLB(lbItems, parseInt(b.getAttribute("data-idx"),10)); }); });
   }
   function roomPage(f){
     $("#pvBg").className="pvbg"; $("#pvBg").style.backgroundImage="url('"+f.img+"')";
