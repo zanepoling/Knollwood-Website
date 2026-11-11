@@ -438,6 +438,15 @@
 
   /* ---- stay logged in: if a recent valid code is remembered, skip the code step ---- */
   (function restore(){ var c=loadCode(); if(c){ activeCode=c; show("#step-terms"); } })();
+
+  /* ---- pre-warm the backend so the first request isn't a cold start ---- */
+  (function prewarm(){
+    var last=0;
+    function wake(){ var now=Date.now(); if(now-last<20000) return; last=now; try{ post({action:"ping"}).catch(function(){}); }catch(e){} }
+    wake();
+    var cf=document.getElementById("code"); if(cf){ cf.addEventListener("focus",wake); }
+    window.addEventListener("pageshow",wake);
+  })();
 })();
 </script>
 </body>

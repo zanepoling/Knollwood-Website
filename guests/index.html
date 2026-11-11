@@ -227,6 +227,18 @@
 
   /* ---- prefill last code ---- */
   (function(){ var c=loadCode(); if(c){ $("#code").value=c; } })();
+
+  /* ---- pre-warm the backend so the first real request is instant ----
+     Fires the moment the page opens (and again if the code field is focused
+     after sitting idle), waking Google Apps Script while the host types. */
+  (function prewarm(){
+    if(PREVIEW) return;
+    var last=0;
+    function wake(){ var now=Date.now(); if(now-last<20000) return; last=now; try{ postOnce({action:"ping"},20000).catch(function(){}); }catch(e){} }
+    wake();
+    var cf=$("#code"); if(cf){ cf.addEventListener("focus",wake); }
+    window.addEventListener("pageshow",wake);
+  })();
 })();
 </script>
 </body>
