@@ -137,19 +137,9 @@
       document.body.appendChild(s);
     });
   }
-  // Retry automatically on a cold-start miss: up to 4 tries, ~18s each.
-  function post(data){
-    var tries=4, perTimeout=18000, gap=800;
-    return new Promise(function(resolve,reject){
-      var i=0;
-      (function go(){
-        i++;
-        postOnce(data, perTimeout).then(resolve, function(err){
-          if(i<tries){ setTimeout(go, gap); } else { reject(err); }
-        });
-      })();
-    });
-  }
+  // NOTE: generating a code is NOT idempotent — each call writes a new row — so it
+  // must never auto-retry. We rely on pre-warm (below) to keep the backend hot, and
+  // make a single attempt with a generous timeout.
   // Pre-warm the backend the moment the page opens (and when a field is focused),
   // so the first Generate isn't a cold start.
   (function prewarm(){
@@ -171,10 +161,14 @@
     var by=sel.value;
     if(!first||!last){ $("#err").textContent="Please enter the guest's first and last name."; return; }
     if(email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ $("#err").textContent="Please enter a valid email, or leave it blank."; return; }
+    var pdigits=phone.replace(/\D/g,"");
+    if(phone && pdigits.length!==10){ $("#err").textContent="Please enter a 10-digit U.S. phone number, or leave it blank."; return; }
+    phone = pdigits ? "("+pdigits.slice(0,3)+") "+pdigits.slice(3,6)+"-"+pdigits.slice(6) : "";
     if(!by){ $("#err").textContent="Please select your name under “Authorized By.”"; return; }
     try{ localStorage.setItem("kw_by", by); }catch(e){}
     var b=$("#gen"); busy(b,true,"Generate Access Code");
-    post({action:"gencode",first:first,last:last,company:company,email:email,phone:phone,by:by,admin:KEY}).then(function(j){
+    // single attempt (non-idempotent) — pre-warm keeps the backend hot
+    postOnce({action:"gencode",first:first,last:last,company:company,email:email,phone:phone,by:by,admin:KEY}, 30000).then(function(j){
       busy(b,false,"Generate Access Code");
       if(j&&j.ok){
         lastCode=j.code;
@@ -189,12 +183,15 @@
       } else {
         $("#err").textContent="Could not generate a code"+(j&&j.error?(" ["+j.error+"]"):"")+". Please try again.";
       }
-    }).catch(function(){ busy(b,false,"Generate Access Code"); $("#err").textContent="Something went wrong - please try again."; });
+    }).catch(function(){ busy(b,false,"Generate Access Code"); $("#err").textContent="This is taking longer than usual — the code may already have been created. Please check the Access Codes tab before generating another."; });
   }
   $("#gen").addEventListener("click",generate);
   ["first","last","company","email","phone"].forEach(function(id){
     $("#"+id).addEventListener("keydown",function(e){ if(e.key==="Enter"){e.preventDefault();generate();} });
   });
+  // Force the phone into (XXX) XXX-XXXX as the user types — digits only, max 10.
+  function fmtPhone(v){ var d=(v||"").replace(/\D/g,"").slice(0,10); if(d.length>6) return "("+d.slice(0,3)+") "+d.slice(3,6)+"-"+d.slice(6); if(d.length>3) return "("+d.slice(0,3)+") "+d.slice(3); if(d.length>0) return "("+d.slice(0,3); return ""; }
+  $("#phone").addEventListener("input",function(){ var p=this.selectionStart===this.value.length; this.value=fmtPhone(this.value); });
 
   $("#copy").addEventListener("click",function(){
     var done=function(){ $("#copied").textContent="Copied to clipboard"; };
