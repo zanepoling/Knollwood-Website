@@ -124,18 +124,41 @@
   MG_USERS.forEach(function(n){ var o=document.createElement("option"); o.value=n; o.textContent=n; sel.appendChild(o); });
   try{ var saved=localStorage.getItem("kw_by"); if(saved && MG_USERS.indexOf(saved)>-1) sel.value=saved; }catch(e){}
 
-  function post(data){
+  // One JSONP attempt with its own timeout.
+  function postOnce(data, timeoutMs){
     return new Promise(function(resolve,reject){
       var cb="kwcb"+(++_n), s=document.createElement("script");
-      var t=setTimeout(function(){cleanup();reject(new Error("timeout"));},25000);
-      function cleanup(){try{delete window[cb];}catch(e){window[cb]=undefined;} if(s.parentNode)s.parentNode.removeChild(s); clearTimeout(t);}
+      var t=setTimeout(function(){cleanup();reject(new Error("timeout"));},timeoutMs);
+      function cleanup(){ window[cb]=function(){}; if(s.parentNode)s.parentNode.removeChild(s); clearTimeout(t); }
       window[cb]=function(d){cleanup();resolve(d);};
-      data.callback=cb;
-      var q=Object.keys(data).map(function(k){return encodeURIComponent(k)+"="+encodeURIComponent(data[k]==null?"":data[k]);}).join("&");
+      var d2={}; Object.keys(data).forEach(function(k){d2[k]=data[k];}); d2.callback=cb;
+      var q=Object.keys(d2).map(function(k){return encodeURIComponent(k)+"="+encodeURIComponent(d2[k]==null?"":d2[k]);}).join("&");
       s.src=ENDPOINT+"?"+q; s.onerror=function(){cleanup();reject(new Error("network"));};
       document.body.appendChild(s);
     });
   }
+  // Retry automatically on a cold-start miss: up to 4 tries, ~18s each.
+  function post(data){
+    var tries=4, perTimeout=18000, gap=800;
+    return new Promise(function(resolve,reject){
+      var i=0;
+      (function go(){
+        i++;
+        postOnce(data, perTimeout).then(resolve, function(err){
+          if(i<tries){ setTimeout(go, gap); } else { reject(err); }
+        });
+      })();
+    });
+  }
+  // Pre-warm the backend the moment the page opens (and when a field is focused),
+  // so the first Generate isn't a cold start.
+  (function prewarm(){
+    var last=0;
+    function wake(){ var now=Date.now(); if(now-last<20000) return; last=now; try{ postOnce({action:"ping"},20000).catch(function(){}); }catch(e){} }
+    wake();
+    var f=$("#first"); if(f){ f.addEventListener("focus",wake); }
+    window.addEventListener("pageshow",wake);
+  })();
   function busy(b,on,label){b.disabled=on;b.textContent=on?"One moment…":label;}
 
   function generate(){
